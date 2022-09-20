@@ -7,7 +7,7 @@ console.log("ça marche !!")
 
 //
 async function fillCanapes(){
-    // on recupre la liste des canapé de l'api
+    // on recupere la liste des canapé de l'api
      const canapes = await getCanapes();
      console.log(canapes);
      console.log(canapes.length);

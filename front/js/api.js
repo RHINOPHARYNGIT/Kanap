@@ -5,3 +5,9 @@ export async function getCanapes(){
    
     return canapes
 }
+export async function getCanape(id){
+    const urlCanape = url + id
+    const canape = await fetch(urlCanape).then(res =>{ return res.json()}).then(data => data)
+   
+    return canape
+}
