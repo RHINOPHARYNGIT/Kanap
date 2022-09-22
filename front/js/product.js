@@ -40,16 +40,20 @@ fillCanape();
 
 // on crée des fonctions permettant de recupérer les options ou inputs
 function getColorValue () {
-    let colorSelect = document.getElementById('colors');
-    let colorSelected = colorSelect.options[colorSelect.selectedIndex].value;
-    console.log (colorSelected); 
-}
+    const colorSelect = document.getElementById('colors');
+    const colorSelected = colorSelect.options[colorSelect.selectedIndex].value;
+    console.log(colorSelected);
+    return colorSelected;
+    
+
+    
+};
 
 function getCanapCount () {
-    let canapQuantity = document.getElementById('quantity').value;
-   
-    console.log (canapQuantity); 
-}
+    const canapQuantity = document.getElementById('quantity').value;
+    console.log(canapQuantity);
+    return canapQuantity;
+};
 
 //on va chercher a créer des objets qui représenteront les infos nécessaires au panier
 class CanapToAdd {
@@ -60,12 +64,29 @@ class CanapToAdd {
     }
 };
 
+async function getCartOrder(){
+const canap = await getCanape(id);
+
 //on crée un eventListener pour le submit des infos du canapé
 const cartSubmit = document.getElementById('addToCart');
 cartSubmit.addEventListener('click',(event) => {
-    getColorValue();
-    getCanapCount();
-});
-console.log(canape);
+    
+    async function cartOrder(){
+    
+        const colorSelected = await getColorValue();
+        const canapQuantity = await getCanapCount();
+        const order = new CanapToAdd (id, colorSelected, canapQuantity);
+        console.log(order);
+    };
+    cartOrder();
+    });
+};
+getCartOrder();
 
 // ajouter le controle sur la soumission du formulaire et verifier que les bonnes infos sont saisies
+
+
+
+
+
+
