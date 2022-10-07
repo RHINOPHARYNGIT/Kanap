@@ -1,5 +1,5 @@
 import {getCanapes} from './api.js'
-console.log("ça marche !!")
+
 
 
 
