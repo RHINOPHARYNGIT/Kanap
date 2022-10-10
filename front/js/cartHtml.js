@@ -18,85 +18,92 @@ async function fillCartPage() {
              let article = document.createElement("article");
             article.classList.add("cart__item");
             article.dataset.id = id
-            article.dataset.color = color
+            article.dataset.color = color;
+            console.log(article.dataset.color);
 
             let divImg = document.createElement('div')
             divImg.classList.add("cart__item__img")
             let img = document.createElement("img");
             img.src = canape.imageUrl;
-            img.alt = canape.altText;
+            img.alt = canape.altTxt;
             divImg.appendChild(img);
            
             let divContent = document.createElement("div");
             divContent.classList.add("cart__item__content");
+            let divItemContentDescription = document.createElement("div");
+            divItemContentDescription.classList.add("cart__item__content__description");
+            let productName = document.createElement("h2");
+            productName.innerHTML = canape.name;
+            let colorContent = document.createElement("p");
+            colorContent.innerHTML = article.dataset.color;
+            let priceOfArticle = document.createElement("p");
+            priceOfArticle.innerHTML = canape.price +"€";
+            divItemContentDescription.appendChild(productName);
+            divItemContentDescription.appendChild(colorContent);
+            divItemContentDescription.appendChild(priceOfArticle)
+            let divItemContentSettings = document.createElement("div");
+            divItemContentSettings.classList.add("cart__item__content__settings");
+            let divItemContentSettingsQuantity = document.createElement("div");
+            divItemContentSettingsQuantity.classList.add("cart__item__content__settings__quantity");
+            let divItemContentSettingsQuantityP = document.createElement("p");
+            divItemContentSettingsQuantityP.innerHTML = "Qté :"+cartName[id][color];
+            console.log(cartName[id][color]);
+            let divItemContentSettingsQuantityInput = document.createElement("input");
+            divItemContentSettingsQuantityInput.classList.add("itemQuantity");
+            divItemContentSettingsQuantityInput.type = "number";
+            divItemContentSettingsQuantityInput.name = "itemQuantity";
+            divItemContentSettingsQuantityInput.min = "1";
+            divItemContentSettingsQuantityInput.max = "100";
+            divItemContentSettingsQuantityInput.value = cartName[id][color];
+            console.log(cartName[id][color]);
+            divItemContentSettingsQuantity.appendChild(divItemContentSettingsQuantityP);
+            divItemContentSettingsQuantity.appendChild(divItemContentSettingsQuantityInput);
+            let divContentSettingsDelete = document.createElement("div");
+            divContentSettingsDelete.classList.add("cart__item__content__settings__delete");
+            let divItemContentSettingsDeleteP = document.createElement("p");
+            divItemContentSettingsDeleteP.innerHTML = "Supprimer";
+            divItemContentSettingsDeleteP.classList.add("deleteItem");
+            divContentSettingsDelete.appendChild(divItemContentSettingsDeleteP);
+            divItemContentSettings.appendChild(divItemContentSettingsQuantity);
+            divItemContentSettings.appendChild(divContentSettingsDelete);
 
-            let items=document.getElementById("cart__items");
+            divContent.appendChild(divItemContentDescription);
+            divContent.appendChild(divItemContentSettings);
+
+            let items = document.getElementById("cart__items");
             items.appendChild(article);
             article.appendChild(divImg);
             article.appendChild(divContent);
             console.log(article);
-
-        }
-
-       
-       /*  let items = document.getElementById("cart__items");
-        
-        let div = document.createElement("div");
-        
-        let h2 = document.createElement("h2");
-        let p = document.createElement("p");
-        
-        items.appendChild(article);
-        
-        article.appendChild(div);
-        div.classList.add("cart__item__img");
-        div.appendChild(img);
-        img.src=canape.imageUrl;      
-        div.classList.add('cart__item__img');
-        article.insertAdjacentElement('beforeend',document.createElement("div"));
-        let articleSecondDiv = document.querySelectorAll("article > div:not(.cart__item__img)");
-        articleSecondDiv.forEach(element=>element.classList.add("cart__item__content"));
-         */
-        
+            console.log(article.dataset.color);
+           
+        };
     };
-        
-       /*  let cartItemContent = document.getElementsByClassName("cart__item__content");
-        for (let i = 0; i < cartItemContent.length; i++) {
-            createAppend("div",cartItemContent[i]);
-            createAppend("div",cartItemContent[i]);
-            };
-
-        let cartItemContentFirstDiv = document.querySelectorAll(".cart__item__content > div:first-of-type");
-        console.log(cartItemContentFirstDiv);    
-        cartItemContentFirstDiv.forEach(element=>{
-            element.classList.add("cart__item__content__description");
-            element.nextElementSibling.classList.add("cart__item__content__settings");
-            });
-        let cartItemContentDescription = document.querySelectorAll(".cart__item__content__description");    
-        cartItemContentDescription.forEach(element=>createAppend("h2",element));
-        
-         */
-    };   
-
-    fillCartPage();
-
+    //mettre en place le listener du changement de quantité(pas encore abouti,pbm de selecteur et variable)
+    function quantityUpdate(){
+        let quantitySelector = document.querySelector('.itemQuantity');
+        quantitySelector.addEventListener('input',(event)=>{
+        event.preventDefault;
+        let colorQuantity = quantitySelector.previousElementSibling.innerHTML-"Qté :";
+        colorQuantity = quantitySelector.value;
+        console.log (quantitySelector.value);
+        console.log(colorQuantity);
+        });
+    };
+    quantityUpdate();
+    
+};   
+fillCartPage();
     
     
     
-        
-        
-    
-   
 
-
-
-//on récupere le panier
 
 
 // on boucle sur ce panier
     // on va recuperer l'id du canapé et fair un appel à l'pi pour recuperer les données du canapé
     // on va boucler sur les couleurs du panier et y remplir la ligne correspondante pour chaque couleur
-    // mettre en place le listener du changement de quantité
+    // 
     // mettre le listener pour la suppresion du produit
 
     
