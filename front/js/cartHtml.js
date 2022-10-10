@@ -5,6 +5,17 @@ function createAppend(element,target){
     let created = document.createElement(element);
     target.appendChild(created);
 };
+ //mettre en place le listener du changement de quantité(pas encore abouti,pbm de selecteur et variable)
+ function quantityUpdate(){
+    let quantitySelector = document.querySelector('.itemQuantity');
+    quantitySelector.addEventListener('input',(event)=>{
+    event.preventDefault;
+    let colorQuantity = quantitySelector.previousElementSibling.innerHTML-"Qté :";
+    colorQuantity = quantitySelector.value;
+    console.log (quantitySelector.value);
+    console.log(colorQuantity);
+    });
+};
 
 async function fillCartPage() {
     //on recupere le panier
@@ -15,7 +26,7 @@ async function fillCartPage() {
         const canape= await getCanape(id);
 
         for (let color of Object.keys(cartName[id]) ){
-             let article = document.createElement("article");
+            let article = document.createElement("article");
             article.classList.add("cart__item");
             article.dataset.id = id
             article.dataset.color = color;
@@ -74,24 +85,22 @@ async function fillCartPage() {
             items.appendChild(article);
             article.appendChild(divImg);
             article.appendChild(divContent);
+            //ajout des listerners sur les bouton de l'article
             console.log(article);
             console.log(article.dataset.color);
            
         };
     };
-    //mettre en place le listener du changement de quantité(pas encore abouti,pbm de selecteur et variable)
-    function quantityUpdate(){
-        let quantitySelector = document.querySelector('.itemQuantity');
-        quantitySelector.addEventListener('input',(event)=>{
-        event.preventDefault;
-        let colorQuantity = quantitySelector.previousElementSibling.innerHTML-"Qté :";
-        colorQuantity = quantitySelector.value;
-        console.log (quantitySelector.value);
-        console.log(colorQuantity);
-        });
-    };
-    quantityUpdate();
-    
+
+    //appeler la fonction qui calcule le total
+    //tu varecuperer le panier 
+    //tu boucle pour sur les id du panier pour recupérer les canapees
+    //calculer le total
+    //et afficher ce total dans le html
+
+   
+    // quantityUpdate();
+
 };   
 fillCartPage();
     
