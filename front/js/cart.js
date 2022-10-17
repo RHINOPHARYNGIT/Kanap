@@ -32,6 +32,9 @@ export function addItem(order){
 export function getCart(){
     return JSON.parse(localStorage.getItem(cartName) || '{}')
 };
+export function setItem(cart){
+    localStorage.setItem(cartName, JSON.stringify(cart));
+}
 
 /* {
     1231321: {
