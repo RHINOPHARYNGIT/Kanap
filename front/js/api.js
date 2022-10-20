@@ -11,3 +11,8 @@ export async function getCanape(id){
    
     return canape
 }
+
+//export async function postOrder(order){
+ //   const urlPost= url+"order"
+ //   const userOrderId = await post
+//}
