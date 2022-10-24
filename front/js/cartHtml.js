@@ -1,5 +1,6 @@
 import { getCart,setItem } from './cart.js'
 import { getCanape } from './api.js';
+import { postOrder } from './api.js';
 
 function deleteArticle() {
     let deleteButton = document.querySelectorAll(".deleteItem");
@@ -55,7 +56,7 @@ async function totalCartPrice () {
 };
 
 function quantityUpdate(){
-    totalCartPrice();
+    // totalCartPrice();
     let quantitySelector = document.querySelectorAll("article input");
     for (let products of quantitySelector){
         console.log(products);
@@ -71,6 +72,7 @@ function quantityUpdate(){
             cart[articleModifId][articleModifColor] = parseInt(products.value);
             //mettre a jour le panier
             setItem(cart);
+            //recalcul du total lorsque le panier est mis à jour
             totalCartPrice();
         });   
     };        
@@ -142,8 +144,7 @@ async function fillCartPage() {
             article.appendChild(divImg);
             article.appendChild(divContent);
             items.appendChild(article);
-            //deleteArticle();
-            //ajout des listeners sur les bouton de l'article
+            
             console.log(article);
             console.log(article.dataset.color); 
         };
@@ -153,32 +154,13 @@ async function fillCartPage() {
     deleteArticle();
     quantityUpdate();
     totalCartPrice();
-    
-    
-    //tu varecuperer le panier 
-    //tu boucle pour sur les id du panier pour recupérer les canapees
-    //calculer le total
-    //et afficher ce total dans le html
-    
+    checkInput();
 };   
 fillCartPage();
 
-// appel au listener qui ecoute la soumission du formulaire
-// on boucle sur ce panier
-    // on va recuperer l'id du canapé et fair un appel à l'pi pour recuperer les données du canapé
-    // on va boucler sur les couleurs du panier et y remplir la ligne correspondante pour chaque couleur
-    // 
-    // mettre le listener pour la suppresion du produit
-// fonction de calcul du prix totall
-
-
 /*ajoute un listener qui écoute la soumission du fomulaire:
-
-vérification de la validité des données du formulaire
-
-soumission de ce formulaire
-
-récupération du traitement de l'api et redirection vers la page confirmation
+ *vérification de la validité des données du formulaire
+ *soumission de ce formulaire
 */
 function getUserData (){
     let contact={};
@@ -188,32 +170,25 @@ function getUserData (){
         let inputValue = input.value;
         contact[inputName] = inputValue;
     });
-console.log(contact);    
+console.log(contact);
+return contact;
+  
 };
-getUserData();
 
-//une fonction qui verifie la validité de chaque input, 
 
-function inputErrorMsg () {
-    
-    let errorMsgsValues = {
-        lastNameErrorMsg : "Veuillez entrer un nom conforme(texte uniquement)",
-        firstNameErrorMsg : "Veuillez entrer un prénom conforme(texte uniquement)",
-        addressErrorMsg : "Veuillez entrer une adresse valide(sans caractères spéciaux)",
-        cityErrorMsg : "Veuillez entrer un nom de ville valide(sans chiffres)",
-        emailErrorMsg : "Veuillez entrer un email conforme(type exemple@mail.com)",
+//une fonction pour attribuer les messages d'erreur de chaque input 
+
+    const errorsMessages = {
+        lastname : "Veuillez entrer un nom conforme(texte uniquement)",
+        firstName : "Veuillez entrer un prénom conforme(texte uniquement)",
+        address : "Veuillez entrer une adresse valide(sans caractères spéciaux)",
+        city : "Veuillez entrer un nom de ville valide(sans chiffres)",
+        email : "Veuillez entrer un email conforme(type exemple@mail.com)",
     };
 
-    let cartOrderFormQuestionP = document.querySelectorAll(".cart__order__form__question p");
-    cartOrderFormQuestionP.forEach(element=> {
-        console.log(element);
-        let errorMsg= element.id;
-        element.innerHTML = errorMsgsValues[errorMsg];
-    });
-    
-};
-inputErrorMsg();
 
+
+//fonction non utile pour le moment (disable du submit)
 function disableSubmit(disabled){
     let orderSubmit = document.querySelector("#order");
     if(disabled){
@@ -224,76 +199,80 @@ function disableSubmit(disabled){
     }
 };
 
+//fonction qui attribue et verifie les Regexp pour chaque input
+//on boucle sur la NodeList des inputs et un compteur de 5 validations doit etre atteint
 function checkInput() {
     let inputRegexs = {
-        firstName:/^[a-z ,.'-]+$/i,
-        lastName: /^[a-z ,.'-]+$/i,
+        firstName:/^[a-z ,.'-]+$/,
+        lastName: /^[a-z ,.'-]+$/,
         address: /^[a-zA-Z0-9\s,.'-]{3,}$/,
-        city: /^[a-z ,.'-]+$/i,
+        city: /^[a-z ,.'-]+$/,
         email: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
     };
-    let orderBtn = document.getElementById("order");
-    orderBtn.addEventListener('click',function(e){
-        e.preventDefault();
-        let inputs = document.querySelectorAll(".cart__order__form__question input");
+    
+    let inputs = document.querySelectorAll(".cart__order__form__question input");
+    let errors = 0;
+    let orderBtn = document.querySelector("form.cart__order__form");
+    
+    orderBtn.addEventListener('submit',function(e){
+        e.preventDefault(); 
         inputs.forEach(input=>{
             let fieldRegex = inputRegexs[input.id];
             let errorDisplay=input.nextElementSibling;
-            console.log(errorDisplay);
-            let validity = 0
-            
-            if (!fieldRegex.test(input.value) || input.value ==""){
-                console.log("mauvais");
-                validity --
-                
-            }
-            else {
-                console.log("bon");
-                errorDisplay.innerHTML="";
-                validity ++
-            }
-            
-            if (validity==5){
-            console.log("5sur5")
             console.log(fieldRegex.test(input.value));
-            disableSubmit(false);
-            } 
-            else{
-            console.log(validity);
-            orderBtn.setAttribute("disabled", true);
-            disableSubmit(true)
-            }           
-        });
-        
+            if (!fieldRegex.test(input.value) || input.value ==""){
+               errorDisplay.innerHTML =  errorsMessages[input.id]
+               errors++
+            }
+           
+        });   
+        if(errors > 0)   {
+            return false
+        }
+        //getUserData()
+        let contact = getUserData()
+        let products = setArrayOfProductId()
+        console.log(contact)
+        //setArrayOfProductId()
+        postOrder(contact,products);
+        //,products
+          
+        //envoi des données à l'api en post
     });
-    let form = document.querySelector(".cart__order__form");
-    
-    console.log(form);
-    console.log(typeof form);
-            
-    
-    
+     
 };
-checkInput();
 
-document
-    .querySelectorAll(".cart__order__form__question")
-    .forEach(input=>{
-        input.addEventListener("change", function(e){
-            checkInput();
-        })})
+
+function setArrayOfProductId(){
+    let cart = getCart();
     
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+      }
+    let cartArray= Object.keys(cart);
+      let products = cartArray.filter(onlyUnique);
+      console.log(products);
+      return products;
+
+};
+setArrayOfProductId();
+
+function submitValid(){
+    //let products= setArrayOfProductId()
+    //let formElement = document.querySelector(form);
+    let contact = formElement.value;
+    //let contact = getUserData ();
+    postOrder();
+    
+    //JSON.parse(result);
+    //window.location.replace("confirmation.html");
+
+};
+
     
 
 /*
-document.getElementbyId("order").addEventListenner('submit',(e) {
-    e.prevent.default;
-    submit order
-    let cart = get cart();
-    let cartIds = pour chaque ID different dans la liste des id retourner l id
-    
-    post l'objet order et array product ID
-    recuperation de l id unique de commande
+
     window. location. replace("page_url")
 }
 
