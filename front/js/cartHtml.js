@@ -1,4 +1,4 @@
-import { getCart,setItem } from './cart.js'
+import { getCart,setItem,deleteCart } from './cart.js'
 import { getCanape } from './api.js';
 import { postOrder } from './api.js';
 
@@ -143,25 +143,28 @@ async function fillCartPage() {
             let items = document.getElementById("cart__items");
             article.appendChild(divImg);
             article.appendChild(divContent);
-            items.appendChild(article);
-            
-            console.log(article);
-            console.log(article.dataset.color); 
+            items.appendChild(article); 
         };
     };
+
     /*on appelle les fonctions avec event listeners pour la suppression et modification d'articles,
     puis la fonction qui calcule le total*/ 
     deleteArticle();
     quantityUpdate();
     totalCartPrice();
-    checkInput();
+
+    //un event listener sur le bouton submit appelle la fonction de vérification
+    let orderBtn = document.querySelector("form.cart__order__form");
+    orderBtn.addEventListener('submit',function(e){
+        e.preventDefault();
+        checkInput();
+    })
+
+    //icicheckInput();
 };   
 fillCartPage();
 
-/*ajoute un listener qui écoute la soumission du fomulaire:
- *vérification de la validité des données du formulaire
- *soumission de ce formulaire
-*/
+//fonction qui récupère des données utilisateur saisies dans les inputs et retourne un objet "contact"
 function getUserData (){
     let contact={};
     let formInputs = document.querySelectorAll(".cart__order__form__question input");
@@ -171,36 +174,21 @@ function getUserData (){
         contact[inputName] = inputValue;
     });
 console.log(contact);
-return contact;
-  
+return contact;  
 };
 
 
-//une fonction pour attribuer les messages d'erreur de chaque input 
 
-    const errorsMessages = {
-        lastname : "Veuillez entrer un nom conforme(texte uniquement)",
-        firstName : "Veuillez entrer un prénom conforme(texte uniquement)",
-        address : "Veuillez entrer une adresse valide(sans caractères spéciaux)",
-        city : "Veuillez entrer un nom de ville valide(sans chiffres)",
-        email : "Veuillez entrer un email conforme(type exemple@mail.com)",
-    };
-
-
-
-//fonction non utile pour le moment (disable du submit)
-function disableSubmit(disabled){
-    let orderSubmit = document.querySelector("#order");
-    if(disabled){
-        orderSubmit.setAttribute("disabled",true);
-    }
-    else{
-        orderSubmit.removeAttribute("disabled");
-    }
+//définition des valeurs des messages d'erreur des inputs
+const errorsMessages = {
+    firstName : "Veuillez entrer un prénom conforme(texte uniquement)",
+    lastName : "Veuillez entrer un nom conforme(texte uniquement)",
+    address : "Veuillez entrer une adresse valide",
+    city : "Veuillez entrer un nom de ville valide(sans chiffres)",
+    email : "Veuillez entrer un email conforme(type exemple@mail.com)",
 };
 
 //fonction qui attribue et verifie les Regexp pour chaque input
-//on boucle sur la NodeList des inputs et un compteur de 5 validations doit etre atteint
 function checkInput() {
     let inputRegexs = {
         firstName:/^[a-z ,.'-]+$/,
@@ -212,68 +200,43 @@ function checkInput() {
     
     let inputs = document.querySelectorAll(".cart__order__form__question input");
     let errors = 0;
-    let orderBtn = document.querySelector("form.cart__order__form");
-    
-    orderBtn.addEventListener('submit',function(e){
-        e.preventDefault(); 
-        inputs.forEach(input=>{
-            let fieldRegex = inputRegexs[input.id];
-            let errorDisplay=input.nextElementSibling;
-            console.log(fieldRegex.test(input.value));
-            if (!fieldRegex.test(input.value) || input.value ==""){
-               errorDisplay.innerHTML =  errorsMessages[input.id]
-               errors++
-            }
-           
-        });   
-        if(errors > 0)   {
-            return false
-        }
-        //getUserData()
-        let contact = getUserData()
-        let products = setArrayOfProductId()
-        console.log(contact)
-        //setArrayOfProductId()
-        postOrder(contact,products);
-        //,products
-          
-        //envoi des données à l'api en post
+    //on boucle sur les inputs pour la validation.
+    inputs.forEach(input=>{
+        //attribution des valeurs de regexs pour les inputs
+        let fieldRegex = inputRegexs[input.id];
+        let errorDisplay=input.nextElementSibling;
+        console.log(fieldRegex.test(input.value));
+        //en cas d'invalidité ou de valeur de champ vide, définition du message d'erreur
+        if (!fieldRegex.test(input.value) || input.value ==""){
+           errorDisplay.innerHTML =  errorsMessages[input.id]
+           errors++
+        }   
     });
-     
+    
+    if(errors > 0) {
+        return false
+    }
+    let contact = getUserData()
+    let products = setArrayOfProductId()
+    //on vérifie que le tableau de produits ne soit pas vide
+    if (products.length == 0) {
+        alert("Votre panier est vide")
+        return false
+    }
+    //la commande au submit est validée, on appelle la fonction qui envoie la commande
+    postOrder(contact,products)
 };
 
-
+//fonction de génération d'un tableau d'id uniques de produits à partir du panier
 function setArrayOfProductId(){
     let cart = getCart();
-    
+
     function onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
-      }
+    }
+    
     let cartArray= Object.keys(cart);
       let products = cartArray.filter(onlyUnique);
       console.log(products);
       return products;
-
 };
-setArrayOfProductId();
-
-function submitValid(){
-    //let products= setArrayOfProductId()
-    //let formElement = document.querySelector(form);
-    let contact = formElement.value;
-    //let contact = getUserData ();
-    postOrder();
-    
-    //JSON.parse(result);
-    //window.location.replace("confirmation.html");
-
-};
-
-    
-
-/*
-
-    window. location. replace("page_url")
-}
-
-*/
