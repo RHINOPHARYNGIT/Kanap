@@ -39,9 +39,7 @@ async function fillCanape (){
         //au clic sur l'element, on genere un nouvel objet canapToAdd;   
         const colorSelected =  document.getElementById('colors').value;
         const canapQuantity = parseInt( document.getElementById('quantity').value);
-        console.log (colorSelected, canapQuantity);
         const order = {id,colorSelected,canapQuantity};
-        console.log(typeof canapQuantity)
         // ajouter le controle sur la soumission du formulaire et verifier que les bonnes infos sont saisies
         if(colorSelected === ''){ 
             alert("Veuillez saisir tous les champs")

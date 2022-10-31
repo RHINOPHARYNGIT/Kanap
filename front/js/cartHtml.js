@@ -2,19 +2,16 @@ import { getCart,setItem,deleteCart } from './cart.js'
 import { getCanape } from './api.js';
 import { postOrder } from './api.js';
 
+//fonction pour la suppression d'un article: un event listener sur le bouton supprimer supprime l'article dans le panier et supprime l'élément html
 function deleteArticle() {
     let deleteButton = document.querySelectorAll(".deleteItem");
     deleteButton.forEach(element=>{
         element.addEventListener("click", function (e){
             let cart = getCart();
-            console.log(cart);
             e.preventDefault;
-            console.log(deleteButton);
             let articleToDelete= element.closest('article');
-            console.log(articleToDelete);
             let articleToDeleteId=articleToDelete.dataset.id;
             let articleToDeleteColor=articleToDelete.dataset.color;
-            console.log(cart);               
             delete cart[articleToDeleteId][articleToDeleteColor];                
             let keyToFind=Object.keys(cart[articleToDeleteId]);
             if (keyToFind.length===0){
@@ -27,10 +24,10 @@ function deleteArticle() {
         });            
 };
 
+//fonction de calcul du total d'articles et du prix total
 async function totalCartPrice () {
     //on récupere le panier
     const cart =  getCart();
-    console.log(cart);
     //quantityUpdate();
     let grandTotal =0;
     let canapeTotals = 0
@@ -45,21 +42,18 @@ async function totalCartPrice () {
                 let canapeTotal = element;
                 canapeTotals += canapeTotal
                 totalPriceOfArticle += canapeTotal * priceOfArticle;
-                console.log(totalPriceOfArticle);
                 grandTotal+=totalPriceOfArticle;                               
             });                 
     };  
-    console.log(grandTotal);
-    console.log(canapeTotals);
     document.getElementById("totalQuantity").innerHTML= canapeTotals;
     document.getElementById("totalPrice").innerHTML= grandTotal;
 };
 
+//fonction de mise à jour des quantités de canapé après modification
 function quantityUpdate(){
-    // totalCartPrice();
     let quantitySelector = document.querySelectorAll("article input");
     for (let products of quantitySelector){
-        console.log(products);
+        //ici un event listener pour chaque changement sur l'input va etre crée 
         products.addEventListener('change',(event)=>{
             const cart = getCart(); 
             event.preventDefault;
@@ -78,10 +72,10 @@ function quantityUpdate(){
     };        
 };
 
+//fonction pour le remplissage de la page panier
 async function fillCartPage() {
     //on recupere le panier
     const cart = await getCart();
-    console.log(cart);
     // on boucle sur chaque canape pour modifier le DOM
     for (let id of  Object.keys(cart)) {
         const canape= await getCanape(id);
@@ -117,7 +111,6 @@ async function fillCartPage() {
             divItemContentSettingsQuantity.classList.add("cart__item__content__settings__quantity");
             let divItemContentSettingsQuantityP = document.createElement("p");
             divItemContentSettingsQuantityP.innerHTML = "Qté :";
-            console.log(cart[id][color]);
             let divItemContentSettingsQuantityInput = document.createElement("input");
             divItemContentSettingsQuantityInput.classList.add("itemQuantity");
             divItemContentSettingsQuantityInput.type = "number";
@@ -125,7 +118,6 @@ async function fillCartPage() {
             divItemContentSettingsQuantityInput.min = "1";
             divItemContentSettingsQuantityInput.max = "100";
             divItemContentSettingsQuantityInput.value = cart[id][color];
-            console.log(cart[id][color]);
             divItemContentSettingsQuantity.appendChild(divItemContentSettingsQuantityP);
             divItemContentSettingsQuantity.appendChild(divItemContentSettingsQuantityInput);
             let divContentSettingsDelete = document.createElement("div");
@@ -173,7 +165,6 @@ function getUserData (){
         let inputValue = input.value;
         contact[inputName] = inputValue;
     });
-console.log(contact);
 return contact;  
 };
 
@@ -191,10 +182,10 @@ const errorsMessages = {
 //fonction qui attribue et verifie les Regexp pour chaque input
 function checkInput() {
     let inputRegexs = {
-        firstName:/^[a-z ,.'-]+$/,
-        lastName: /^[a-z ,.'-]+$/,
+        firstName:/^[a-zA-Z ,.'-]+$/,
+        lastName: /^[a-zA-Z ,.'-]+$/,
         address: /^[a-zA-Z0-9\s,.'-]{3,}$/,
-        city: /^[a-z ,.'-]+$/,
+        city: /^[a-zA-Z ,.'-]+$/,
         email: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
     };
     
@@ -205,7 +196,6 @@ function checkInput() {
         //attribution des valeurs de regexs pour les inputs
         let fieldRegex = inputRegexs[input.id];
         let errorDisplay=input.nextElementSibling;
-        console.log(fieldRegex.test(input.value));
         //en cas d'invalidité ou de valeur de champ vide, définition du message d'erreur
         if (!fieldRegex.test(input.value) || input.value ==""){
            errorDisplay.innerHTML =  errorsMessages[input.id]
@@ -237,6 +227,5 @@ function setArrayOfProductId(){
     
     let cartArray= Object.keys(cart);
       let products = cartArray.filter(onlyUnique);
-      console.log(products);
       return products;
 };

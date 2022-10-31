@@ -4,8 +4,6 @@ import {getCanapes} from './api.js'
 async function fillCanapes(){
     // on recupere la liste des canapé de l'api
     const canapes = await getCanapes();
-    console.log(canapes);
-    console.log(canapes.length);
     //on affiche dynamiquement chaque canapé dans la page
     fillProducts(canapes);
 }

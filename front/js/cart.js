@@ -40,6 +40,6 @@ export function addItem(order){
             [color] : quantity
         }           
     }   
-    //on remplit le panier
+    //on reinitialise le panier
     localStorage.setItem(cartName, JSON.stringify(cart));
 };
